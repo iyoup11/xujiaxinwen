@@ -21,3 +21,274 @@
     background: #666;
     color: #fff;
 }
+
+.news-story p {
+    margin-bottom: 8px;
+    line-height: 1.5;
+}
+
+.news-story {
+    margin: 15px 0;
+    padding: 10px;
+    background: #f8f9fa;
+    border-radius: 5px;
+}
+
+.dark-mode .news-story {
+    background: #555;
+}
+
+.keyword-badge {
+    margin-right: 5px;
+    margin-bottom: 5px;
+}
+
+.voting {
+    border-top: 1px solid #eee;
+    padding-top: 10px;
+}
+
+.dark-mode .voting {
+    border-top-color: #555;
+}
+
+.vote-result {
+    margin-top: 5px;
+    font-size: 0.9em;
+}
+/* 全局样式 */
+body {
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    min-height: 100vh;
+    transition: background-color 0.3s ease;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+/* 卡片样式 */
+.card {
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 15px;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    border: none;
+    overflow: hidden;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+}
+
+/* 按钮样式 */
+.btn {
+    border-radius: 8px;
+    padding: 8px 16px;
+    transition: all 0.3s ease;
+    font-weight: 500;
+}
+
+.btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.btn-danger {
+    background: linear-gradient(45deg, #ff6b6b, #ee5253);
+    border: none;
+}
+
+.btn-warning {
+    background: linear-gradient(45deg, #ffd93d, #ff9f43);
+    border: none;
+    color: #fff;
+}
+
+/* 列表样式 */
+.list-group-item {
+    border-radius: 10px;
+    margin-bottom: 10px;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    padding: 15px;
+    transition: all 0.3s ease;
+}
+
+.list-group-item:hover {
+    transform: translateX(5px);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+}
+
+/* 新闻故事样式 */
+.news-story {
+    background: rgba(248, 249, 250, 0.9);
+    border-radius: 12px;
+    padding: 20px;
+    margin: 15px 0;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+}
+
+.news-story p {
+    margin-bottom: 8px;
+    line-height: 1.5;
+    font-size: 1.1em;
+    color: #2d3436;
+}
+
+.dark-mode .news-story {
+    background: rgba(47, 53, 66, 0.9);
+}
+
+.dark-mode .news-story p {
+    color: #dcdde1;
+}
+
+.keyword-badge {
+    padding: 6px 12px;
+    margin-right: 8px;
+    margin-bottom: 8px;
+    border-radius: 20px;
+    font-size: 0.9em;
+    transition: all 0.3s ease;
+}
+
+.keyword-badge:hover {
+    transform: scale(1.1);
+}
+
+.voting {
+    border-top: 2px solid rgba(0, 0, 0, 0.1);
+    padding-top: 15px;
+    margin-top: 15px;
+}
+
+.vote-result {
+    margin-top: 10px;
+    font-size: 0.95em;
+    color: #636e72;
+}
+
+.dark-mode .vote-result {
+    color: #b2bec3;
+}
+
+.challenge, .rating {
+    margin-top: 15px;
+    padding-top: 15px;
+    border-top: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.dark-mode .challenge, .dark-mode .rating {
+    border-color: rgba(255, 255, 255, 0.1);
+}
+
+.comments {
+    margin-top: 20px;
+    padding-top: 15px;
+    border-top: 2px solid rgba(0, 0, 0, 0.1);
+}
+
+.dark-mode .comments {
+    border-color: rgba(255, 255, 255, 0.1);
+}
+
+.comment-item {
+    padding: 10px;
+    margin-bottom: 10px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 8px;
+}
+
+.dark-mode .comment-item {
+    background: rgba(0, 0, 0, 0.2);
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+    .container {
+        padding: 10px;
+    }
+    
+    .card {
+        margin: 10px 0;
+    }
+    
+    .btn {
+        width: 100%;
+        margin-bottom: 10px;
+    }
+    
+    .news-story {
+        padding: 15px;
+    }
+}
+
+/* 标题样式 */
+h1, h2 {
+    color: #2d3436;
+    margin-bottom: 1.5rem;
+    font-weight: 600;
+}
+
+.dark-mode h1, .dark-mode h2 {
+    color: #f5f6fa;
+}
+
+/* 提示文本样式 */
+.text-muted {
+    color: #636e72 !important;
+}
+
+.dark-mode .text-muted {
+    color: #b2bec3 !important;
+}
+
+/* 表单控件样式 */
+.form-control {
+    border-radius: 8px;
+    padding: 10px 15px;
+    border: 2px solid rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+}
+
+.form-control:focus {
+    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.25);
+    border-color: #007bff;
+}
+
+.dark-mode .form-control {
+    background: rgba(47, 53, 66, 0.95);
+    border-color: rgba(255, 255, 255, 0.1);
+    color: #f5f6fa;
+}
+
+/* 警告提示样式 */
+.alert {
+    border-radius: 10px;
+    padding: 15px 20px;
+    margin-bottom: 20px;
+    border: none;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+}
+
+/* 分页样式 */
+.pagination {
+    margin-top: 30px;
+}
+
+.page-link {
+    border-radius: 8px;
+    margin: 0 5px;
+    border: none;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+}
+
+.page-link:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}

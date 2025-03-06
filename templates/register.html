@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="{{ request.args.get('lang', 'zh') }}">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ translations.title }} - {{ translations.register }}</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="{{ url_for('static', filename='style.css') }}" rel="stylesheet">
+</head>
+<body>
+    <div class="container mt-5">
+        <div class="row justify-content-center">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="text-center"><i class="fas fa-user-plus"></i> {{ translations.register }}</h2>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3 text-end">
+                            <a href="?lang=zh" class="btn btn-sm btn-outline-primary"><i class="fas fa-language"></i> 中文</a>
+                            <a href="?lang=en" class="btn btn-sm btn-outline-primary"><i class="fas fa-language"></i> English</a>
+                        </div>
+                        {% with messages = get_flashed_messages() %}
+                            {% if messages %}
+                                {% for message in messages %}
+                                    <div class="alert alert-info"><i class="fas fa-info-circle"></i> {{ message }}</div>
+                                {% endfor %}
+                            {% endif %}
+                        {% endwith %}
+                        <form method="POST">
+                            <div class="mb-3">
+                                <label for="username" class="form-label"><i class="fas fa-user"></i> {{ translations.username }}</label>
+                                <input type="text" class="form-control" id="username" name="username" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="password" class="form-label"><i class="fas fa-lock"></i> {{ translations.password }}</label>
+                                <input type="password" class="form-control" id="password" name="password" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="confirm_password" class="form-label"><i class="fas fa-lock"></i> {{ translations.confirm_password }}</label>
+                                <input type="password" class="form-control" id="confirm_password" name="confirm_password" required>
+                            </div>
+                            <div class="d-grid gap-2">
+                                <button type="submit" class="btn btn-primary"><i class="fas fa-user-plus"></i> {{ translations.register }}</button>
+                                <a href="{{ url_for('login') }}" class="btn btn-outline-secondary"><i class="fas fa-sign-in-alt"></i> {{ translations.login }}</a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

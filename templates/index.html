@@ -1,152 +1,199 @@
 <!DOCTYPE html>
-<html lang="zh">
+<html lang="{{ request.args.get('lang', 'zh') }}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>虚假新闻生成器</title>
+    <title>{{ translations.title }}</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
     <div class="container mt-5">
-        <h1 class="text-center mb-4">虚假新闻生成器（纯娱乐）</h1>
-        <p class="disclaimer text-center text-danger">声明：以下内容纯属虚构，请勿当真！</p>
-        <button id="theme-toggle" class="btn btn-outline-secondary mb-3">切换主题</button>
+        <h1 class="text-center mb-4"><i class="fas fa-newspaper"></i> {{ translations.title }}</h1>
+        <p class="disclaimer text-center text-danger"><i class="fas fa-exclamation-triangle"></i> 声明：以下内容纯属虚构，请勿当真！</p>
+        
+        <div class="mb-3 text-end">
+            <a href="?lang=zh" class="btn btn-sm btn-outline-primary"><i class="fas fa-language"></i> 中文</a>
+            <a href="?lang=en" class="btn btn-sm btn-outline-primary"><i class="fas fa-language"></i> English</a>
+            {% if 'username' in session %}
+                <a href="{{ url_for('register') }}" class="btn btn-sm btn-outline-primary"><i class="fas fa-user-plus"></i> {{ translations.register }}</a>
+            {% else %}
+                <a href="{{ url_for('login') }}" class="btn btn-sm btn-outline-success"><i class="fas fa-sign-in-alt"></i> {{ translations.login }}</a>
+                <a href="{{ url_for('register') }}" class="btn btn-sm btn-outline-primary"><i class="fas fa-user-plus"></i> {{ translations.register }}</a>
+            {% endif %}
+        </div>
+        
+        <button id="theme-toggle" class="btn btn-outline-secondary mb-3"><i class="fas fa-moon"></i> 切换主题</button>
         
         <div class="card p-4 mb-4">
             <form method="POST">
                 <div class="mb-3">
-                    <label for="category" class="form-label">选择板块：</label>
+                    <label for="category" class="form-label"><i class="fas fa-list"></i> {{ translations.category_label }}</label>
                     <select name="category" id="category" class="form-select">
-                        <option value="">随机</option>
-                        <option value="international">国际时事</option>
-                        <option value="gossip">明星八卦</option>
-                        <option value="tech">科技伦理</option>
-                        <option value="social">社会热点</option>
-                        <option value="daily">家常理短</option>
+                        <option value="international">国际新闻</option>
+                        <option value="gossip">娱乐八卦</option>
+                        <option value="tech">科技新闻</option>
+                        <option value="social">社会新闻</option>
+                        <option value="daily">日常生活</option>
                     </select>
                 </div>
                 
                 <div class="mb-3">
-                    <label for="custom_word" class="form-label">自定义关键词（可选）：</label>
+                    <label for="style" class="form-label"><i class="fas fa-palette"></i> {{ translations.style_label }}</label>
+                    <select name="style" id="style" class="form-select">
+                        <option value="official">官方严肃</option>
+                        <option value="tabloid">小报八卦</option>
+                        <option value="conspiracy">阴谋论</option>
+                    </select>
+                </div>
+                
+                <div class="mb-3">
+                    <label for="custom_word" class="form-label"><i class="fas fa-keyboard"></i> {{ translations.custom_word_label }}</label>
                     <input type="text" name="custom_word" id="custom_word" class="form-control" placeholder="如：外星人">
                 </div>
                 
-                <button type="submit" class="btn btn-danger">生成新闻</button>
+                <button type="submit" class="btn btn-danger"><i class="fas fa-magic"></i> {{ translations.generate_btn }}</button>
             </form>
-            <button type="button" id="refresh-btn" class="btn btn-warning mt-2">刷新一条</button>
+            <button type="button" id="refresh-btn" class="btn btn-warning mt-2"><i class="fas fa-sync-alt"></i> {{ translations.refresh_btn }}</button>
         </div>
         
         <div class="news-output">
             {% if news_list %}
-                <h2>生成的新闻</h2>
+                <h2>{{ translations['generated_news'] }}</h2>
                 <ul class="list-group" id="news-list">
                     {% for news in news_list %}
-                        <li class="list-group-item">
-                            <strong>{{ news.category }}</strong>: {{ news.headline }}
-                            <p class="comment text-muted">网友评论：{{ news.comment }}</p>
+                        <li class="list-group-item" data-event-id="{{ news.event_id }}">
+                            <strong>{{ news.category }} ({{ news.style }})</strong>
+                            <div class="news-story">
+                                {% for line in news.headline.split('\n') %}
+                                    <p>{{ line }}</p>
+                                {% endfor %}
+                            </div>
+                            <div class="comments-section">
+                                <h4>评论区</h4>
+                                {% if session.get('username') %}
+                                    <div class="comment-form mb-3">
+                                        <input type="text" class="form-control comment-input" placeholder="发表评论...">
+                                        <button class="btn btn-primary add-comment-btn mt-2">发表评论</button>
+                                    </div>
+                                {% else %}
+                                    <p class="text-muted">请登录后发表评论</p>
+                                {% endif %}
+                                <div class="comment-list">
+                                    {% for comment in load_comments(news.event_id) %}
+                                        <div class="comment-item" data-timestamp="{{ comment.timestamp }}">
+                                            <strong>{{ comment.username }}</strong> ({{ comment.timestamp }}): {{ comment.comment }}
+                                            {% if session.get('username') == comment.username %}
+                                                <button class="btn btn-sm btn-danger delete-comment-btn">删除</button>
+                                            {% endif %}
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                            <p class="image-desc text-muted">{{ translations['image_desc'] }} {{ news.image_desc }}</p>
+                            <p class="comment text-muted">{{ translations['comment'] }} {{ news.comment }}</p>
+                            <p class="heat text-muted">{{ translations['heat'] }} {{ news.heat }}</p>
+                            <p class="sentiment text-muted">{{ translations['sentiment'] }} {{ news.sentiment }}</p>
+                            <div class="keywords mb-2">
+                                <span>{{ translations['keywords'] }}</span>
+                                {% for keyword in news.keywords %}
+                                    <span class="badge bg-primary keyword-badge" style="cursor: pointer;" data-keyword="{{ keyword }}">{{ keyword }}</span>
+                                {% endfor %}
+                            </div>
+                            <button class="btn btn-sm btn-info followup-btn"><i class="fas fa-forward"></i> {{ translations['followup_btn'] }}</button>
+                            <button class="btn btn-sm btn-primary speak-btn"><i class="fas fa-volume-up"></i> {{ translations['speak_btn'] }}</button>
+                            <button class="btn btn-sm btn-secondary share-btn" data-headline="{{ news.headline.split('\n')[0] }}"><i class="fas fa-share"></i> {{ translations['share_btn'] }}</button>
+                            {% if session.get('username') %}
+                                <button class="btn btn-sm btn-warning favorite-btn" data-event-id="{{ news.event_id }}">{{ translations['add_to_favorites'] }}</button>
+                            {% endif %}
+                            <div class="challenge mt-2">
+                                <span>{{ translations['submit_challenge'] }}</span>
+                                <select class="challenge-theme form-select d-inline-block w-auto">
+                                    <option value="{{ translations['challenge_most_outrageous'] }}">{{ translations['challenge_most_outrageous'] }}</option>
+                                    <option value="{{ translations['challenge_funniest'] }}">{{ translations['challenge_funniest'] }}</option>
+                                </select>
+                                <button class="btn btn-sm btn-success submit-challenge">{{ translations['submit'] }}</button>
+                            </div>
+                            <div class="rating mt-2">
+                                <span>{{ translations['rate'] }}</span>
+                                {% for i in range(1, 6) %}
+                                    <button class="btn btn-sm btn-outline-warning rate-btn" data-rating="{{ i }}">{{ i }} {{ translations['star'] }}</button>
+                                {% endfor %}
+                            </div>
+                            <div class="voting mt-2">
+                                <span>{{ translations['believe_question'] }}</span>
+                                <button class="btn btn-sm btn-success vote-btn" data-vote="believe">{{ translations['believe'] }}</button>
+                                <button class="btn btn-sm btn-danger vote-btn" data-vote="not_believe">{{ translations['not_believe'] }}</button>
+                                <p class="vote-result">{{ translations['believe'] }}：{{ news.believe }} | {{ translations['not_believe'] }}：{{ news.not_believe }}</p>
+                            </div>
+                            <div class="comments mt-3">
+                                <h5>{{ translations['comments'] }}</h5>
+                                {% if session.get('username') %}
+                                    <form class="comment-form mb-3">
+                                        <div class="input-group">
+                                            <input type="text" name="comment" class="form-control" placeholder="{{ translations['enter_comment'] }}">
+                                            <button type="submit" class="btn btn-primary">{{ translations['submit_comment'] }}</button>
+                                        </div>
+                                    </form>
+                                {% else %}
+                                    <p>{{ translations['login_to_comment'] }}</p>
+                                {% endif %}
+                                <div class="comment-list">
+                                    {% for comment in load_comments(news.event_id) %}
+                                        <div class="comment-item" data-timestamp="{{ comment.timestamp }}">
+                                            <strong>{{ comment.username }}</strong> ({{ comment.timestamp }}): {{ comment.comment }}
+                                            {% if session.get('username') == comment.username %}
+                                                <button class="btn btn-sm btn-danger delete-comment-btn">{{ translations['delete'] }}</button>
+                                            {% endif %}
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
                         </li>
                     {% endfor %}
                 </ul>
-                <button type="button" id="load-more-btn" class="btn btn-secondary mt-3">生成更多</button>
+                <button type="button" id="load-more-btn" class="btn btn-secondary mt-3">{{ translations['generate_more'] }}</button>
             {% endif %}
         </div>
 
         <div class="history mt-5">
-            <h2>历史记录（最近 50 条）</h2>
-            {% if history %}
-                <ul class="list-group">
-                    {% for item in history %}
-                        <li class="list-group-item">
-                            <strong>{{ item.category }}</strong>: {{ item.headline }}
-                            <p class="comment text-muted">网友评论：{{ item.comment }}</p>
-                        </li>
-                    {% endfor %}
-                </ul>
-                <nav aria-label="Page navigation" class="mt-3">
-                    <ul class="pagination justify-content-center">
-                        {% if page > 1 %}
-                            <li class="page-item">
-                                <a class="page-link" href="?page={{ page - 1 }}">上一页</a>
-                            </li>
-                        {% endif %}
-                        {% for p in range(1, total_pages + 1) %}
-                            <li class="page-item {% if p == page %}active{% endif %}">
-                                <a class="page-link" href="?page={{ p }}">{{ p }}</a>
+            <h2><i class="fas fa-history"></i> {{ translations.history_title }}</h2>
+            {% if 'username' in session %}
+                {% if history %}
+                    <ul class="list-group">
+                        {% for item in history %}
+                            <li class="list-group-item">
+                                <strong><i class="fas fa-tag"></i> {{ item.category }} ({{ item.style }})</strong>: {{ item.headline }}
+                                <p class="text-muted"><i class="fas fa-image"></i> 配图描述：{{ item.image_desc }}</p>
+                                <p class="comment text-muted"><i class="fas fa-comments"></i> 网友评论：{{ item.comment }}</p>
                             </li>
                         {% endfor %}
-                        {% if page < total_pages %}
-                            <li class="page-item">
-                                <a class="page-link" href="?page={{ page + 1 }}">下一页</a>
-                            </li>
-                        {% endif %}
                     </ul>
-                </nav>
+                    <nav aria-label="Page navigation" class="mt-3">
+                        <ul class="pagination justify-content-center">
+                            {% if page > 1 %}
+                                <li class="page-item">
+                                    <a class="page-link" href="?page={{ page - 1 }}"><i class="fas fa-chevron-left"></i> {{ translations.prev_page }}</a>
+                                </li>
+                            {% endif %}
+                            {% if page < total_pages %}
+                                <li class="page-item">
+                                    <a class="page-link" href="?page={{ page + 1 }}">{{ translations.next_page }} <i class="fas fa-chevron-right"></i></a>
+                                </li>
+                            {% endif %}
+                        </ul>
+                    </nav>
+                {% else %}
+                    <p class="text-muted"><i class="fas fa-info-circle"></i> {{ translations.no_history }}</p>
+                {% endif %}
             {% else %}
-                <p>暂无历史记录，快来生成吧！</p>
+                <p class="text-muted"><i class="fas fa-lock"></i> {{ translations.login_to_view_history }}</p>
             {% endif %}
         </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-    <script>
-        document.getElementById('refresh-btn').addEventListener('click', function() {
-            const category = document.getElementById('category').value;
-            const customWord = document.getElementById('custom_word').value;
-            
-            fetch('/generate_one', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded',
-                },
-                body: `category=${category}&custom_word=${customWord}`
-            })
-            .then(response => response.json())
-            .then(data => {
-                const output = document.querySelector('.news-output .list-group') || document.createElement('ul');
-                if (!document.querySelector('.news-output .list-group')) {
-                    document.querySelector('.news-output').innerHTML = '<h2>生成的新闻</h2>';
-                    output.classList.add('list-group');
-                    document.querySelector('.news-output').appendChild(output);
-                }
-                const li = document.createElement('li');
-                li.classList.add('list-group-item');
-                li.innerHTML = `<strong>${data.category}</strong>: ${data.headline}<p class="comment text-muted">网友评论：${data.comment}</p>`;
-                output.insertBefore(li, output.firstChild);
-                if (output.children.length > 3) output.removeChild(output.lastChild);
-            });
-        });
-
-        document.getElementById('load-more-btn')?.addEventListener('click', function() {
-            const category = document.getElementById('category').value;
-            const customWord = document.getElementById('custom_word').value;
-            
-            fetch('/generate_one', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded',
-                },
-                body: `category=${category}&custom_word=${customWord}`
-            })
-            .then(response => response.json())
-            .then(data => {
-                const output = document.getElementById('news-list');
-                const li = document.createElement('li');
-                li.classList.add('list-group-item');
-                li.innerHTML = `<strong>${data.category}</strong>: ${data.headline}<p class="comment text-muted">网友评论：${data.comment}</p>`;
-                output.appendChild(li);
-            });
-        });
-
-        const toggleButton = document.getElementById('theme-toggle');
-        const body = document.body;
-        toggleButton.addEventListener('click', () => {
-            body.classList.toggle('dark-mode');
-            localStorage.setItem('theme', body.classList.contains('dark-mode') ? 'dark' : 'light');
-        });
-        if (localStorage.getItem('theme') === 'dark') {
-            body.classList.add('dark-mode');
-        }
-    </script>
+    <script src="{{ url_for('static', filename='generate.js') }}"></script>
 </body>
 </html>
